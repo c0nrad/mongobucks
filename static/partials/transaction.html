@@ -1,0 +1,16 @@
+<div class="container"> 
+
+<h2> Transaction </h2>
+
+<table class="table">
+  <tr> <th> Time </th> <th> From </th> <th> To </th> <th> Amount </th> <th> Memo </th>  </tr> 
+  <tr>
+    <td> <a ui-sref="transaction({id: transaction.ID})">{{transaction.TS | fromNow }}</a> </td>
+    <td> <a ui-sref="user({user: transaction.From})">{{transaction.From }}</a></td>
+    <td> <a ui-sref="user({user: transaction.To})">{{transaction.To }}</a></td>
+    <td> {{transaction.Amount }} </td>
+    <td> {{transaction.Memo}} </td>
+  </tr>
+</table>
+
+</div>
