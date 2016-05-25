@@ -70,7 +70,8 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserTransactionsHandler(w http.ResponseWriter, r *http.Request) {
-	username := context.Get(r, "username").(string)
+	vars := mux.Vars(r)
+	username := vars["username"]
 
 	transactions, err := models.GetTransactionsForUser(username)
 	if err != nil {
