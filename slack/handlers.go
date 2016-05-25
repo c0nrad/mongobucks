@@ -35,6 +35,7 @@ func BuildHandlers() []Handler {
 	handler = append(handler, Handler{regexp.MustCompile("^(give|g) (?P<to>.*) (?P<amount>[0-9]*) (?P<memo>.*)$"), TransferHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(give|g) (?P<to>.*) (?P<amount>[0-9]*)$"), TransferHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(balance|b) all$"), AllBalanceHandler})
+	handler = append(handler, Handler{regexp.MustCompile("^(help|h)$"), HelpHandler})
 
 	return handler
 }
@@ -75,6 +76,18 @@ func TrimUsername(username string) string {
 	username = strings.Replace(username, "<@", "", -1)
 	username = strings.Replace(username, ">", "", -1)
 	return username
+}
+
+func HelpHandler(command string, vars map[string]string) string {
+	out := `>>> Usage: 
+
+@mongobucks: balance
+@mongobucks: give @stuart 10 for being a rockstar
+@mongobucks: help
+http://mongobucks.mongodb.cc
+`
+
+	return out
 }
 
 func BalanceHandler(command string, vars map[string]string) string {
