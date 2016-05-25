@@ -85,7 +85,7 @@ func BalanceHandler(command string, vars map[string]string) string {
 		return err.Error()
 	}
 
-	return fmt.Sprintf("%d mongobucks", balance)
+	return fmt.Sprintf("%d mongobucks. http://mongobucks.mongodb.cc/#/u/%s", balance, vars["user"])
 }
 
 func AllBalanceHandler(command string, vars map[string]string) string {
@@ -121,10 +121,10 @@ func TransferHandler(command string, vars map[string]string) string {
 		return "invalid amount: " + err.Error()
 	}
 
-	out, err := models.ExecuteTransfer(from, to, amount, vars["memo"])
+	t, err := models.ExecuteTransfer(from, to, amount, vars["memo"])
 	if err != nil {
 		return err.Error()
 	}
 
-	return out
+	return fmt.Sprintf("Transfer complete! http://mongobucks.mongodb.cc/#/t/" + t.ID.Hex())
 }

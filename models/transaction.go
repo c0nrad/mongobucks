@@ -55,32 +55,32 @@ func GetRecentTransactions() ([]*Transaction, error) {
 	return transactions, err
 }
 
-func ExecuteTransfer(from, to string, amount int, memo string) (string, error) {
+func ExecuteTransfer(from, to string, amount int, memo string) (*Transaction, error) {
 	fmt.Println("[+] Executing Transfer", from, to, amount, memo)
 
 	if from == to {
-		return "", errors.New("can't give to self")
+		return nil, errors.New("can't give to self")
 	}
 
 	fromUser, err := FindUser(from)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	toUser, err := FindUser(to)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if fromUser.Balance < amount {
-		return "", errors.New("insufficent funds")
+		return nil, errors.New("insufficent funds")
 	}
 
 	// There's probably race conditions, so we'll just keep the audit log first, and if something bad happens we'll recalculate manually
 	t := Transaction{ID: bson.NewObjectId(), From: from, To: to, Amount: amount, TS: time.Now(), Memo: memo}
 	err = t.Insert()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	fromUser.Balance -= amount
@@ -88,13 +88,14 @@ func ExecuteTransfer(from, to string, amount int, memo string) (string, error) {
 
 	err = fromUser.Update()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	err = toUser.Update()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return fmt.Sprintf("Transfer complete! http://mongobucks.mongodb.cc/t/" + t.ID.Hex()), nil
+	return &t, nil
+
 }
