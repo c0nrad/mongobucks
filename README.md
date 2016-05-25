@@ -2,6 +2,8 @@
 
 A slack bot clone of redit's tip bot. It also comes with a web page for viewing balances and such.
 
+![Example](docs/demo.png)
+
 ## Usage
 
 To invite mongobucks bot into your slack channel, enter:
