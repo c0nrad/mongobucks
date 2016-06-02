@@ -12,4 +12,4 @@ docker-run:
 	docker run  --env-file=".ENV" -p 8080:8080 -t mongobucks
 
 env:
-	export $(cat .env | xargs)
+	export $(cat .ENV | xargs)

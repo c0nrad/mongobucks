@@ -12,6 +12,7 @@ import (
 const (
 	UserCollection        = "users"
 	TransactionCollection = "transactions"
+	GambleCollection      = "gambles"
 
 	DB = "mongobucks"
 

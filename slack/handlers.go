@@ -35,6 +35,8 @@ func BuildHandlers() []Handler {
 	handler = append(handler, Handler{regexp.MustCompile("^(give|g) (?P<to>.*) (?P<amount>[0-9]*) (?P<memo>.*)$"), TransferHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(give|g) (?P<to>.*) (?P<amount>[0-9]*)$"), TransferHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(balance|b) all$"), AllBalanceHandler})
+	handler = append(handler, Handler{regexp.MustCompile("^(gamble) (?P<amount>[0-9]*) (?P<orientation>.*)$"), GambleHandler})
+
 	handler = append(handler, Handler{regexp.MustCompile("^(help|h)$"), HelpHandler})
 
 	return handler
@@ -84,6 +86,7 @@ func HelpHandler(command string, vars map[string]string) string {
 @mongobucks: balance
 @mongobucks: give @stuart 10 for being a rockstar
 @mongobucks: help
+@mongobucks: gamble 5 heads
 http://mongobucks.mongodb.cc
 `
 
@@ -140,4 +143,53 @@ func TransferHandler(command string, vars map[string]string) string {
 	}
 
 	return fmt.Sprintf("Transfer complete! http://mongobucks.mongodb.cc/#/t/" + t.ID.Hex())
+}
+
+func GambleHandler(command string, vars map[string]string) string {
+	fmt.Println("[+] GambleHandler", vars)
+
+	username := vars["user"]
+
+	balance, err := models.GetBalance(vars["user"])
+	if err != nil {
+		return err.Error()
+	}
+
+	amount, err := strconv.Atoi(vars["amount"])
+	if err != nil {
+		return "invalid amount: " + err.Error()
+	}
+
+	if amount > balance {
+		return "insufficent funds"
+	}
+
+	orientation := strings.ToLower(vars["orientation"])
+
+	if orientation != "heads" && orientation != "tails" {
+		return "must guess either 'heads' or 'tails'."
+	}
+
+	user, err := models.FindUser(username)
+	if err != nil {
+		return err.Error()
+	}
+
+	g, err := models.ExecuteGamble(username, amount, orientation == "heads")
+	if g.IsWinner {
+		user.Balance += amount
+	} else {
+		user.Balance -= amount
+	}
+
+	err = user.Update()
+	if err != nil {
+		return err.Error()
+	}
+
+	if g.IsWinner {
+		return fmt.Sprintf("You win! New Balance: %d. http://mongobucks.mongodb.cc/#/g/%s", user.Balance, g.ID.Hex())
+	} else {
+		return fmt.Sprintf("Better luck next time. New Balance: %d. http://mongobucks.mongodb.cc/#/g/%s", user.Balance, g.ID.Hex())
+	}
 }

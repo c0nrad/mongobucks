@@ -17,6 +17,11 @@ app.config(function($stateProvider, $urlRouterProvider) {
       templateUrl: "partials/transaction.html",
       controller: "TransactionController"
     })
+    .state('gamble', {
+      url: "/g/:id",
+      templateUrl: "partials/gamble.html",
+      controller: "GambleController"
+    })
     .state('user', {
       url: "/u/:user",
       templateUrl: "partials/user.html",
@@ -39,22 +44,36 @@ app.service("Transaction", function($resource) {
   })
 });
 
-app.controller("HomeController", function($scope, User, Transaction) {
+app.service("Gamble", function($resource) {
+  return $resource("/api/gambles/:id", {"id": "@_id"}, { 
+    recent: { method: "get", isArray:true,  url: "/api/gambles/recent"},
+    user: {method: "get", isArray: true, url: "/api/users/:user/gambles" }
+  })
+});
+
+app.controller("HomeController", function($scope, User, Transaction, Gamble) {
   $scope.users = User.query();
   $scope.recentTransactions = Transaction.recent();
+  $scope.recentGambles = Gamble.recent()
 })
 
 app.controller("TransactionController", function($scope, $stateParams, Transaction) {
   $scope.transaction = Transaction.get({id: $stateParams.id})
 })
 
+app.controller("GambleController", function($scope, $stateParams, Gamble) {
+  $scope.gamble = Gamble.get({id: $stateParams.id})
+})
+
+
 app.controller("HeaderController", function($scope, User) {
   $scope.me = User.me();
 })
 
-app.controller("UserController", function($scope, $stateParams, User, Transaction) {
+app.controller("UserController", function($scope, $stateParams, User, Transaction, Gamble) {
   $scope.user = User.get({user: $stateParams.user})
   $scope.transactions = Transaction.user({user: $stateParams.user})
+  $scope.gambles = Gamble.user({user: $stateParams.user})
 })
 
 

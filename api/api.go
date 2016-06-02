@@ -21,10 +21,14 @@ func BuildRouter() *mux.Router {
 	r.HandleFunc("/api/users/me", GetMeHandler).Methods("GET")
 	r.HandleFunc("/api/users/{username}", GetUserHandler).Methods("GET")
 	r.HandleFunc("/api/users/{username}/transactions", GetUserTransactionsHandler).Methods("GET")
+	r.HandleFunc("/api/users/{username}/gambles", GetUserGamblesHandler).Methods("GET")
 
 	// r.HandleFunc("/api/transactions", NewTransactionHandler).Methods("POST")
 	r.HandleFunc("/api/transactions/recent", GetRecentTransactionsHandler).Methods("GET")
 	r.HandleFunc("/api/transactions/{id}", GetTransactionHandler).Methods("GET")
+
+	r.HandleFunc("/api/gambles/recent", GetRecentGamblesHandler).Methods("GET")
+	r.HandleFunc("/api/gambles/{id}", GetGambleHandler).Methods("GET")
 
 	// // Login
 	r.HandleFunc("/login/google", LoginGoogleHandler)
@@ -99,9 +103,46 @@ func GetTransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	transaction, err := models.FindTransaction(id)
 	if err != nil {
-		http.Error(w, "unable to find user", 400)
+		http.Error(w, "unable to find transaction", 400)
 		return
 	}
 
 	json.NewEncoder(w).Encode(transaction)
+}
+
+func GetUserGamblesHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	username := vars["username"]
+
+	gambles, err := models.GetGamblesForUser(username)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(gambles)
+}
+
+func GetRecentGamblesHandler(w http.ResponseWriter, r *http.Request) {
+
+	gambles, err := models.GetRecentGambles()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(gambles)
+}
+
+func GetGambleHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	gamble, err := models.FindGamble(id)
+	if err != nil {
+		http.Error(w, "unable to find gamble", 400)
+		return
+	}
+
+	json.NewEncoder(w).Encode(gamble)
 }

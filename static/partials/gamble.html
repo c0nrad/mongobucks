@@ -1,0 +1,15 @@
+<div class="container"> 
+
+<h2> Gamble </h2>
+
+<table class="table">
+  <tr> <th> Time </th> <th> User </th> <th> Amount </th> <th> Guess </th> </tr> 
+  <tr ng-class="{ 'success': gamble.IsWinner, 'danger': !gamble.IsWinner}">
+    <td> <a ui-sref="gamble({id: gamble.ID})">{{gamble.TS | fromNow }}</a> </td>
+    <td> <a ui-sref="user({user: gamble.User})">{{gamble.User }}</a></td>
+    <td> {{gamble.Amount }} </td>
+    <td> {{gamble.GuessHeads}} </td>
+  </tr>
+</table>
+
+</div>

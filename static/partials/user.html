@@ -9,6 +9,8 @@
   </tr>
 </table>
 
+
+<h4> Transactions </h4>
 <table class="table">
   <tr> <th> Time </th> <th> From </th> <th> To </th> <th> Amount </th> <th> Memo </th>  </tr> 
   <tr ng-repeat="transaction in transactions | orderBy:'TS':true">
@@ -19,4 +21,17 @@
     <td> {{transaction.Memo}} </td>
   </tr>
 </table>
+
+<h4> Gambles </h4>
+<table class="table">
+  <tr> <th> Time </th> <th> User </th> <th> Amount </th> <th> Guess </th> </tr> 
+  <tr ng-repeat="gamble in gambles | orderBy:'TS':true" ng-class="{ 'success': gamble.IsWinner, 'danger': !gamble.IsWinner}">
+    <td> <a ui-sref="gamble({id: gamble.ID})">{{gamble.TS | fromNow }}</a> </td>
+    <td> <a ui-sref="user({user: gamble.User})">{{gamble.User }}</a></td>
+    <td> {{gamble.Amount }} </td>
+    <td> {{gamble.GuessHeads}} </td>
+  </tr>
+</table>
+
+
 </div>
