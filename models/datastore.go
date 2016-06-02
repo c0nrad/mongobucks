@@ -27,7 +27,7 @@ func init() {
 	Session = ConnectToMongo(MongoUri)
 }
 
-func ConnectToMongo(uri string) *mgo.Session {
+func ConnectToMongoTLS(uri string, useTLS bool) *mgo.Session {
 	tlsConfig := &tls.Config{}
 	tlsConfig.InsecureSkipVerify = true
 
@@ -45,6 +45,18 @@ func ConnectToMongo(uri string) *mgo.Session {
 
 	fmt.Println("COnnect to mongo")
 
+	EnsureUserIndex(session)
+
+	return session
+}
+
+func ConnectToMongo(uri string) *mgo.Session {
+	session, err := mgo.Dial(uri)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Connect to mongo")
 	EnsureUserIndex(session)
 
 	return session
