@@ -36,6 +36,7 @@ func BuildHandlers() []Handler {
 	handler = append(handler, Handler{regexp.MustCompile("^(give|g) (?P<to>.*) (?P<amount>[0-9]*)$"), TransferHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(balance|b) all$"), AllBalanceHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(gamble) (?P<amount>[0-9]*) (?P<orientation>.*)$"), GambleHandler})
+	handler = append(handler, Handler{regexp.MustCompile("^(gamble) (?P<amount>[0-9]*)$"), GambleHandler})
 
 	handler = append(handler, Handler{regexp.MustCompile("^(help|h)$"), HelpHandler})
 
@@ -167,7 +168,7 @@ func GambleHandler(command string, vars map[string]string) string {
 	orientation := strings.ToLower(vars["orientation"])
 
 	if orientation != "heads" && orientation != "tails" {
-		return "must guess either 'heads' or 'tails'."
+		orientation = "heads"
 	}
 
 	user, err := models.FindUser(username)
