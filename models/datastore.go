@@ -27,7 +27,7 @@ func init() {
 	Session = ConnectToMongoTLS(MongoUri)
 }
 
-func ConnectToMongoTLS(uri string, useTLS bool) *mgo.Session {
+func ConnectToMongoTLS(uri string) *mgo.Session {
 	tlsConfig := &tls.Config{}
 	tlsConfig.InsecureSkipVerify = true
 
