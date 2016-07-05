@@ -14,6 +14,5 @@ COPY . ./
 RUN go get
 RUN go build
 
-RUN echo "All done!"
 EXPOSE 8081
 CMD ["./mongobucks"]
