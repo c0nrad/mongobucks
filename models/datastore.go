@@ -13,6 +13,8 @@ const (
 	UserCollection        = "users"
 	TransactionCollection = "transactions"
 	GambleCollection      = "gambles"
+	RewardCollection      = "rewards"
+	TicketCollection      = "tickets"
 
 	DB = "mongobucks"
 
@@ -25,6 +27,7 @@ var Session *mgo.Session
 func init() {
 	MongoUri = os.Getenv("MONGO_URI")
 	Session = ConnectToMongo(MongoUri)
+	// SeedData()
 }
 
 func ConnectToMongoTLS(uri string, useTLS bool) *mgo.Session {

@@ -1,10 +1,15 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
+	"image/png"
 	"net/http"
+	"strconv"
 
 	"github.com/c0nrad/mongobucks/models"
+	"github.com/c0nrad/mongobucks/ticket"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -22,6 +27,7 @@ func BuildRouter() *mux.Router {
 	r.HandleFunc("/api/users/{username}", GetUserHandler).Methods("GET")
 	r.HandleFunc("/api/users/{username}/transactions", GetUserTransactionsHandler).Methods("GET")
 	r.HandleFunc("/api/users/{username}/gambles", GetUserGamblesHandler).Methods("GET")
+	r.HandleFunc("/api/users/me/tickets", GetMyTicketsHandler).Methods("GET")
 
 	// r.HandleFunc("/api/transactions", NewTransactionHandler).Methods("POST")
 	r.HandleFunc("/api/transactions/recent", GetRecentTransactionsHandler).Methods("GET")
@@ -29,6 +35,13 @@ func BuildRouter() *mux.Router {
 
 	r.HandleFunc("/api/gambles/recent", GetRecentGamblesHandler).Methods("GET")
 	r.HandleFunc("/api/gambles/{id}", GetGambleHandler).Methods("GET")
+
+	r.HandleFunc("/api/rewards", GetAllRewardsHandler).Methods("GET")
+
+	r.HandleFunc("/api/tickets", BuyTicketHandler).Methods("POST")
+	r.HandleFunc("/api/tickets/{token}", GetTicketHandler).Methods("GET")
+	r.HandleFunc("/api/tickets/{token}/render", GenerateTicketHandler).Methods("GET")
+	r.HandleFunc("/api/tickets/{token}/redeem", RedeemTicketHandler).Methods("POST")
 
 	// // Login
 	r.HandleFunc("/login/google", LoginGoogleHandler)
@@ -145,4 +158,119 @@ func GetGambleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(gamble)
+}
+
+// r.HandleFunc("/api/rewards", GetAllRewardsHandler).Methods("GET")
+
+// r.HandleFunc("/api/ticket", BuyTicketHandler).Methods("POST")
+// r.HandleFunc("/api/users/me/tickets", GetMyTicketsHandler).Methods("GET")
+// r.HandleFunc("/api/ticket/:token/redeem", RedeemTicketHandler).Methods("POST")
+
+func GetAllRewardsHandler(w http.ResponseWriter, r *http.Request) {
+	rewards, err := models.GetRewards()
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(rewards)
+}
+
+func BuyTicketHandler(w http.ResponseWriter, r *http.Request) {
+	username := context.Get(r, "username").(string)
+
+	user, err := models.FindUser(username)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	var t models.Ticket
+	err = json.NewDecoder(r.Body).Decode(&t)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	fmt.Println(t)
+
+	reward, err := models.GetRewardById(t.Reward)
+	if err != nil {
+		http.Error(w, "Could not find reward", 400)
+		return
+	}
+
+	ticket, err := models.PurchaseTicket(user, reward)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	json.NewEncoder(w).Encode(ticket)
+}
+
+func GetMyTicketsHandler(w http.ResponseWriter, r *http.Request) {
+	username := context.Get(r, "username").(string)
+
+	tickets, err := models.GetTicketsByUsername(username)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	json.NewEncoder(w).Encode(tickets)
+}
+
+func RedeemTicketHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	token := vars["token"]
+
+	err := models.Redeem(token)
+
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	w.Write([]byte("redeemed"))
+}
+
+func GetTicketHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	token := vars["token"]
+
+	ticket, err := models.GetTicketByToken(token)
+
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	json.NewEncoder(w).Encode(ticket)
+}
+
+func GenerateTicketHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	token := vars["token"]
+
+	t, err := models.GetTicketByToken(token)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	ticketImg := ticket.GenerateTicketImage(t)
+
+	buffer := new(bytes.Buffer)
+	err = png.Encode(buffer, ticketImg)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Content-Type", "image/png")
+	w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+	_, err = w.Write(buffer.Bytes())
+	if err != nil {
+		panic(err)
+	}
 }

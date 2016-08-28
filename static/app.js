@@ -29,12 +29,26 @@ app.config(function($stateProvider, $urlRouterProvider) {
     })
     .state('cashout', {
       url: "/cashout",
+      controller: 'CashoutController',
       templateUrl: "partials/cashout.html",
+    })
+    .state('redeem', {
+      url: "/r/:token",
+      controller: 'RedemptionController',
+      templateUrl: 'partials/redemption.html'
+    })
+    .state('me', {
+      url: "/me",
+      controller: 'MeController',
+      templateUrl: 'partials/me.html'
     })
 });
 
 app.service("User", function($resource) {
-  return $resource("/api/users/:user", {}, {me: { method: "get", "url": "/api/users/me"}})
+  return $resource("/api/users/:user", {}, {
+    me: { method: "get", "url": "/api/users/me"},
+    tickets: {method: "get", isArray:true, url: "/api/users/me/tickets" }
+  })
 });
 
 app.service("Transaction", function($resource) {
@@ -51,10 +65,36 @@ app.service("Gamble", function($resource) {
   })
 });
 
+app.service("Reward", function($resource) {
+  return $resource("/api/rewards/:id", {"id": "@_id"}, { 
+    recent: { method: "get", isArray:true,  url: "/api/gambles/recent"},
+    user: {method: "get", isArray: true, url: "/api/users/:user/gambles" }
+  })
+});
+
+app.service("Ticket", function($resource) {
+  return $resource("/api/tickets/:token", {}, {
+    redeem: {method: "POST", url: "/api/tickets/:token/redeem"}
+  });
+});
+
+
 app.controller("HomeController", function($scope, User, Transaction, Gamble) {
   $scope.users = User.query();
   $scope.recentTransactions = Transaction.recent();
   $scope.recentGambles = Gamble.recent()
+})
+
+app.controller("CashoutController", function($scope, $stateParams, $state, Reward, Ticket, User) {
+  $scope.rewards = Reward.query()
+  $scope.me = User.me();
+
+
+  $scope.buy = function(reward) {
+    Ticket.save({reward: reward.ID}, function() {
+      $state.go('me');
+    });
+  }
 })
 
 app.controller("TransactionController", function($scope, $stateParams, Transaction) {
@@ -65,10 +105,21 @@ app.controller("GambleController", function($scope, $stateParams, Gamble) {
   $scope.gamble = Gamble.get({id: $stateParams.id})
 })
 
-
 app.controller("HeaderController", function($scope, User) {
   $scope.me = User.me();
 })
+
+app.controller("RedemptionController", function($scope, $state, $stateParams, User, Ticket) {
+  $scope.me = User.me();
+  $scope.ticket = Ticket.get({token: $stateParams.token})
+
+  $scope.redeem = function() {
+    $scope.ticket.$redeem({token: $scope.ticket.Redemption}, function() {
+      $state.reload();
+    })
+  }
+})
+
 
 app.controller("UserController", function($scope, $stateParams, User, Transaction, Gamble) {
   $scope.user = User.get({user: $stateParams.user})
@@ -76,6 +127,10 @@ app.controller("UserController", function($scope, $stateParams, User, Transactio
   $scope.gambles = Gamble.user({user: $stateParams.user})
 })
 
+app.controller('MeController', function($scope, User) {
+  $scope.me = User.me()
+  $scope.tickets = User.tickets()
+})
 
 //<!-- Filters -->
 app.filter('fromNow', function() {
