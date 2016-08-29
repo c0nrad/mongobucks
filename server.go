@@ -18,7 +18,7 @@ func StartServer() {
 
 	n := negroni.Classic()
 	n.Use(negroni.HandlerFunc(api.CookieAuthentication))
-	//n.Use(negroni.HandlerFunc(LocalAuthentication))
+	// n.Use(negroni.HandlerFunc(LocalAuthentication))
 
 	n.UseHandler(r)
 	n.Run(":" + Port)

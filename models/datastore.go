@@ -13,6 +13,8 @@ const (
 	UserCollection        = "users"
 	TransactionCollection = "transactions"
 	GambleCollection      = "gambles"
+	RewardCollection      = "rewards"
+	TicketCollection      = "tickets"
 
 	DB = "mongobucks"
 

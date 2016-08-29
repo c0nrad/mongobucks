@@ -1,0 +1,7 @@
+<h1> {{me.Username}} </h1>
+
+<h2> Valid Tickets </h2>
+
+<div ng-repeat="ticket in tickets">
+  <a href="http://localhost:8080/api/tickets/{{ticket.Redemption}}/render"><img ng-if="!ticket.IsUsed" style="border:1px solid black;" ng-src="http://localhost:8080/api/tickets/{{ticket.Redemption}}/render"></a>
+</div>

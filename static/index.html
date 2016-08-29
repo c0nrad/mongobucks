@@ -36,7 +36,7 @@
 
           <ul class="nav navbar-nav pull-right">
             <li ng-if="me.Username">
-              <a>{{me.Username}} - {{me.Balance}} Mongobucks</a>
+              <a ui-sref="me">{{me.Username}} - {{me.Balance}} Mongobucks</a>
             </li>
             <li ng-hide="me.Username"><a href="/login/google">Login</a></li>
 
