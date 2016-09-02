@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/c0nrad/ctf/api"
+	"github.com/c0nrad/mongobucks/api"
 	"github.com/c0nrad/mongobucks/slack"
 )
 
