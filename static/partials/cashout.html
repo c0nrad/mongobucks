@@ -1,6 +1,11 @@
 <div class="container">
   <p> Here you can spend your hard earned mongobucks! </p>
 
+  <div ng-hide="me.Username">
+    <p> Must be logged in to spend mongobucks! </p>
+    <a href="/login/google" class="btn btn-primary">Login</a>
+  </div>  
+
   <br>
   <table class="table">
     <tr> <th> Prize </th> <th> Description </th> <th> Price </th> <th> Buy </th> </tr>
