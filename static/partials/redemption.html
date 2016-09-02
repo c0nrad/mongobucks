@@ -9,7 +9,7 @@
 
 <div ng-if="!ticket.IsUsed">
 
-  <img style="border:1px solid black;" ng-src="http://localhost:8080/api/tickets/{{ticket.Redemption}}/render">
+  <img style="border:1px solid black;" ng-src="/api/tickets/{{ticket.Redemption}}/render">
 
   <p> Once a ticket is redeemed, it is no longer valid. </p>
   <button ng-click="redeem()">Redeem</button>
