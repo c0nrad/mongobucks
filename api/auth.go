@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/c0nrad/mongobucks/models"
-	"github.com/gorilla/context"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -115,23 +115,24 @@ func GoogleOAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 301)
 }
 
-func CookieAuthentication(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func GetUser(r *http.Request) (string, error) {
 	session, err := CookieStore.Get(r, CookieName)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		return "", errors.New("can't access cookie store")
 	}
 
 	username := session.Values["username"]
-	fmt.Println("[+] CookieAuthentication", username)
-	if username == nil {
-		fmt.Println("[-] Missing Cookie, using anonymous")
-		context.Set(r, "username", "anonymous")
-	} else {
-		context.Set(r, "username", username)
+
+	if username == nil || username == "" {
+		return "", errors.New("user should of been logged in")
 	}
 
-	next(w, r)
+	out, okay := username.(string)
+	if !okay {
+		return "", errors.New("user should of been logged in")
+	}
+
+	return out, nil
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

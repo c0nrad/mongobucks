@@ -10,7 +10,6 @@ import (
 
 	"github.com/c0nrad/mongobucks/models"
 	"github.com/c0nrad/mongobucks/ticket"
-	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
@@ -51,7 +50,11 @@ func BuildRouter() *mux.Router {
 }
 
 func GetMeHandler(w http.ResponseWriter, r *http.Request) {
-	me := context.Get(r, "username").(string)
+	me, err := GetUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
 	user, err := models.FindUser(me)
 	if err != nil {
@@ -177,7 +180,11 @@ func GetAllRewardsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func BuyTicketHandler(w http.ResponseWriter, r *http.Request) {
-	username := context.Get(r, "username").(string)
+	username, err := GetUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
 	user, err := models.FindUser(username)
 	if err != nil {
@@ -210,7 +217,11 @@ func BuyTicketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMyTicketsHandler(w http.ResponseWriter, r *http.Request) {
-	username := context.Get(r, "username").(string)
+	username, err := GetUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
 
 	tickets, err := models.GetTicketsByUsername(username)
 	if err != nil {
