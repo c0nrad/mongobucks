@@ -16,7 +16,7 @@ import (
 )
 
 var CookieStore = sessions.NewCookieStore([]byte("i4masup3rs3cret!!!13373!??swagswagswag"))
-var CookieName = "session"
+var CookieName = "msession"
 
 func BuildRouter() *mux.Router {
 	r := mux.NewRouter()

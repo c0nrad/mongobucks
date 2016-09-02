@@ -110,6 +110,8 @@ func GoogleOAuthCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	session.Values["username"] = username
 	session.Save(r, w)
 
+	fmt.Println("[+] ", username, "just logged in")
+
 	http.Redirect(w, r, "/", 301)
 }
 
