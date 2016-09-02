@@ -123,6 +123,7 @@ func CookieAuthentication(w http.ResponseWriter, r *http.Request, next http.Hand
 	}
 
 	username := session.Values["username"]
+	fmt.Println("[+] CookieAuthentication", username)
 	if username == nil {
 		fmt.Println("[-] Missing Cookie, using anonymous")
 		context.Set(r, "username", "anonymous")

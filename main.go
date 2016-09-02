@@ -1,8 +1,16 @@
 package main
 
-import "github.com/c0nrad/mongobucks/slack"
+import (
+	"strings"
+
+	"github.com/c0nrad/ctf/api"
+	"github.com/c0nrad/mongobucks/slack"
+)
 
 func main() {
-	go slack.StartSlackListener()
+
+	if !strings.Contains(api.GetReturnHost(), "localhost") {
+		go slack.StartSlackListener()
+	}
 	StartServer()
 }

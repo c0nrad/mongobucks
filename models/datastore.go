@@ -27,6 +27,7 @@ var Session *mgo.Session
 func init() {
 	MongoUri = os.Getenv("MONGO_URI")
 	Session = ConnectToMongoTLS(MongoUri)
+	//SeedData()
 }
 
 func ConnectToMongoTLS(uri string) *mgo.Session {
