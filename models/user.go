@@ -13,7 +13,7 @@ type User struct {
 }
 
 func (user *User) Update() error {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	err := session.DB(DB).C(UserCollection).Update(bson.M{"username": user.Username}, bson.M{"$set": bson.M{"balance": user.Balance}})
@@ -21,7 +21,7 @@ func (user *User) Update() error {
 }
 
 func FindOrCreateUser(username string) (*User, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	// Atomically safe, but this will probably fail a lot. index on username
@@ -33,7 +33,7 @@ func FindOrCreateUser(username string) (*User, error) {
 }
 
 func FindUser(username string) (*User, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var user User
@@ -42,7 +42,7 @@ func FindUser(username string) (*User, error) {
 }
 
 func GetUsers() ([]*User, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var out []*User
@@ -61,9 +61,12 @@ func GetBalance(username string) (int, error) {
 }
 
 func (user *User) UpdateProfile(name, picture string) error {
+	session := Session.Copy()
+	defer session.Close()
+
 	user.Name = name
 	user.Picture = picture
 
-	err := Session.DB(DB).C(UserCollection).UpdateId(user.ID, bson.M{"$set": bson.M{"name": name, "picture": picture}})
+	err := session.DB(DB).C(UserCollection).UpdateId(user.ID, bson.M{"$set": bson.M{"name": name, "picture": picture}})
 	return err
 }

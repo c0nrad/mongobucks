@@ -21,7 +21,7 @@ type Transaction struct {
 }
 
 func (t *Transaction) Insert() error {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	err := session.DB(DB).C(TransactionCollection).Insert(t)
@@ -29,7 +29,7 @@ func (t *Transaction) Insert() error {
 }
 
 func FindTransaction(id string) (*Transaction, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var transaction Transaction
@@ -38,7 +38,7 @@ func FindTransaction(id string) (*Transaction, error) {
 }
 
 func GetTransactionsForUser(username string) ([]*Transaction, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var transactions []*Transaction
@@ -47,7 +47,7 @@ func GetTransactionsForUser(username string) ([]*Transaction, error) {
 }
 
 func GetRecentTransactions() ([]*Transaction, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var transactions []*Transaction

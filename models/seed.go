@@ -3,7 +3,7 @@ package models
 import "gopkg.in/mgo.v2/bson"
 
 func SeedData() {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	session.DB(DB).C(RewardCollection).DropCollection()

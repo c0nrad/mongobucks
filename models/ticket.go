@@ -23,7 +23,7 @@ type Ticket struct {
 }
 
 func Redeem(redemption string) error {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	err := session.DB(DB).C(TicketCollection).Update(bson.M{"redemption": redemption}, bson.M{"$set": bson.M{"isused": true}})
@@ -32,7 +32,7 @@ func Redeem(redemption string) error {
 }
 
 func GetTicketByToken(token string) (*Ticket, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var ticket Ticket
@@ -42,7 +42,7 @@ func GetTicketByToken(token string) (*Ticket, error) {
 }
 
 func PurchaseTicket(user *User, reward *Reward) (*Ticket, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	if user.Balance < reward.Price {
@@ -63,7 +63,7 @@ func PurchaseTicket(user *User, reward *Reward) (*Ticket, error) {
 }
 
 func GetTicketsByUsername(username string) ([]*Ticket, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var out []*Ticket

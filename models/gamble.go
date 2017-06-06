@@ -24,7 +24,7 @@ type Gamble struct {
 }
 
 func (g *Gamble) Insert() error {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	err := session.DB(DB).C(GambleCollection).Insert(g)
@@ -41,7 +41,7 @@ func ExecuteGamble(user string, amount int, guessHeads bool) (*Gamble, error) {
 }
 
 func FindGamble(id string) (*Gamble, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var gamble Gamble
@@ -50,7 +50,7 @@ func FindGamble(id string) (*Gamble, error) {
 }
 
 func GetGamblesForUser(username string) ([]*Gamble, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var gambles []*Gamble
@@ -59,7 +59,7 @@ func GetGamblesForUser(username string) ([]*Gamble, error) {
 }
 
 func GetRecentGambles() ([]*Gamble, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var gambles []*Gamble

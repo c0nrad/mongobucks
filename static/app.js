@@ -120,7 +120,6 @@ app.controller("RedemptionController", function($scope, $state, $stateParams, Us
   }
 })
 
-
 app.controller("UserController", function($scope, $stateParams, User, Transaction, Gamble) {
   $scope.user = User.get({user: $stateParams.user})
   $scope.transactions = Transaction.user({user: $stateParams.user})

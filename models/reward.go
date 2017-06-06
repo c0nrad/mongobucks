@@ -12,7 +12,7 @@ type Reward struct {
 }
 
 func GetRewards() ([]*Reward, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var out []*Reward
@@ -22,7 +22,7 @@ func GetRewards() ([]*Reward, error) {
 }
 
 func GetRewardById(id bson.ObjectId) (*Reward, error) {
-	session := Session.Clone()
+	session := Session.Copy()
 	defer session.Close()
 
 	var reward Reward
