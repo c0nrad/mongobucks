@@ -1,4 +1,4 @@
-run: build env
+run: build 
 	./mongobucks
 
 build:

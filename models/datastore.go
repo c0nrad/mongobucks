@@ -15,6 +15,8 @@ const (
 	GambleCollection      = "gambles"
 	RewardCollection      = "rewards"
 	TicketCollection      = "tickets"
+	TickerCollection      = "tickers"
+	InvestmentCollection  = "investments"
 
 	DB = "mongobucks"
 
@@ -26,7 +28,15 @@ var Session *mgo.Session
 
 func init() {
 	MongoUri = os.Getenv("MONGO_URI")
-	Session = ConnectToMongoTLS(MongoUri)
+
+	fmt.Println("MongoUri", MongoUri)
+
+	if MongoUri != "" {
+		Session = ConnectToMongoTLS(MongoUri)
+	} else {
+		Session = ConnectToMongo("localhost")
+	}
+
 	//SeedData()
 }
 
@@ -35,6 +45,7 @@ func ConnectToMongoTLS(uri string) *mgo.Session {
 	tlsConfig.InsecureSkipVerify = true
 
 	dialInfo, err := mgo.ParseURL(uri)
+
 	dialInfo.DialServer = func(addr *mgo.ServerAddr) (net.Conn, error) {
 		conn, err := tls.Dial("tcp", addr.String(), tlsConfig)
 		return conn, err
