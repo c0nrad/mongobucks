@@ -134,7 +134,7 @@ func InvestmentHelpHandler(command string, vars map[string]string) string {
 	out += `
 Investments:
 -----------
-You can use your hard earned mongobucks to buy stocks. As the price of stocks goes up and down, so do your mongobucks, but at an increased rate (called leverage).
+You can use your hard earned mongobucks to buy stocks. As the price of stocks goes up and down, so do your mongobucks, but at an increased rate (called leverage). Whether you prefer steady blue chip stocks or penny stocks, it's all up to you.
 
 Each Mongobuck is worth $100. To see the current price of a stock type:
 
@@ -233,12 +233,12 @@ func BuyInvestmentHandler(command string, vars map[string]string) string {
 		return "Could not buy investment: " + err.Error()
 	}
 
-	balance, err := models.GetBalance(vars["user"])
-	if err != nil {
-		return "Could not load balance :" + err.Error()
-	}
+	// balance, err := models.GetBalance(vars["user"])
+	// if err != nil {
+	// 	return "Could not load balance :" + err.Error()
+	// }
 
-	return fmt.Sprintf("Buy order placed for %dx%s at %.2fmongobucks/per, remaining balance %d mongobucks.", i.Amount, i.TickerName, float64(i.BuyPrice)*models.PenniesToMongobucks, balance)
+	return fmt.Sprintf("Buy order placed for %dx%s at %.2fmongobucks/per, total price of %dmongobucks.", i.Amount, i.TickerName, float64(i.BuyPrice)*models.PenniesToMongobucks, i.TotalBuyValue())
 }
 
 func SellInvestmentHandler(command string, vars map[string]string) string {

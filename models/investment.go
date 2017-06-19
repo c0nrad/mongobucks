@@ -85,7 +85,7 @@ func BuyInvestment(user *User, name string, amount, leverage int) (*Investment, 
 	}
 
 	if leverage > 10 || leverage < 1 {
-		return nil, errors.New("leverage must be between 1 and 50")
+		return nil, errors.New("leverage must be between 1 and 10")
 	}
 
 	user.Balance -= int(float64(lastTicker.Last*amount) * PenniesToMongobucks)
