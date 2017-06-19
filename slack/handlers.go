@@ -44,6 +44,8 @@ func BuildHandlers() []Handler {
 
 	handler = append(handler, Handler{regexp.MustCompile("^(sell) (?P<id>[0-9a-f]*)$"), SellInvestmentHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(buy) (?P<amount>[0-9]*) (?P<tickername>.*) (?P<leverage>[0-9]*)x$"), BuyInvestmentHandler})
+	handler = append(handler, Handler{regexp.MustCompile("^(buy) (?P<amount>[0-9]*) (?P<tickername>.*)$"), BuyInvestmentNoLeverageHandler})
+
 	handler = append(handler, Handler{regexp.MustCompile("^(investments|i)$"), ShowInvestmentsHandler})
 
 	// handler = append(handler, Handler{regexp.MustCompile("^(gamble) (?P<amount>[0-9]*)$"), GambleHandler})
@@ -199,6 +201,11 @@ func TickerHandler(command string, vars map[string]string) string {
 	fmt.Println(ticker.Last)
 	fmt.Println(models.PenniesToMongobucks)
 	return fmt.Sprintf("%s trading at $%.2f (%.4f mongobucks each)", ticker.Name, float64(ticker.Last)/100, float64(ticker.Last)*models.PenniesToMongobucks)
+}
+
+func BuyInvestmentNoLeverageHandler(command string, vars map[string]string) string {
+	vars["leverage"] = "1"
+	return BuyInvestmentHandler(command, vars)
 }
 
 func BuyInvestmentHandler(command string, vars map[string]string) string {
