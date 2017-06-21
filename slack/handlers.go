@@ -48,7 +48,7 @@ func BuildHandlers() []Handler {
 
 	handler = append(handler, Handler{regexp.MustCompile("^(investments|i)$"), ShowInvestmentsHandler})
 
-	// handler = append(handler, Handler{regexp.MustCompile("^(gamble) (?P<amount>[0-9]*)$"), GambleHandler})
+	handler = append(handler, Handler{regexp.MustCompile("^(redeem|r) (?P<token>.*)$"), RedeemHandler})
 
 	handler = append(handler, Handler{regexp.MustCompile("^(help|h)$"), HelpHandler})
 	handler = append(handler, Handler{regexp.MustCompile("^(help|h) (investments|i)$"), InvestmentHelpHandler})
@@ -124,6 +124,12 @@ Not the gambling type? Don't worry, you can invest your hard earned mongobucks i
 @mongobucks sell <id>
 
 http://mongobucks.mongodb.cc
+
+Redeem (beta):
+------
+If you've been rewarded a Mongobucks voucher, you can redeem them using:
+
+@mongobucks redeem <id>
 `
 
 	out += "```"
@@ -366,6 +372,26 @@ func TransferHandler(command string, vars map[string]string) string {
 	}
 
 	return fmt.Sprintf("Transfer complete! http://mongobucks.mongodb.cc/#/t/" + t.ID.Hex())
+}
+
+func RedeemHandler(command string, vars map[string]string) string {
+	fmt.Println("[+] RedeemHandler", vars)
+
+	username := vars["user"]
+
+	user, err := models.FindUser(username)
+	if err != nil {
+		return "invalid user: " + err.Error()
+	}
+
+	token := vars["token"]
+	err = models.Redeem(token, user)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	return "redeemed"
 }
 
 func GambleHandler(command string, vars map[string]string) string {

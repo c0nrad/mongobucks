@@ -28,7 +28,6 @@ var Session *mgo.Session
 
 func init() {
 	MongoUri = os.Getenv("MONGO_URI")
-
 	fmt.Println("MongoUri", MongoUri)
 
 	if MongoUri != "" {

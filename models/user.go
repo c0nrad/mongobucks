@@ -70,3 +70,11 @@ func (user *User) UpdateProfile(name, picture string) error {
 	err := session.DB(DB).C(UserCollection).UpdateId(user.ID, bson.M{"$set": bson.M{"name": name, "picture": picture}})
 	return err
 }
+
+func (user *User) IsAdmin() bool {
+	if user.Username == "stuart.larsen" {
+		return true
+	}
+
+	return false
+}

@@ -236,7 +236,19 @@ func RedeemTicketHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	token := vars["token"]
 
-	err := models.Redeem(token)
+	username, err := GetUser(r)
+	if err != nil {
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	user, err := models.FindUser(username)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	err = models.Redeem(token, user)
 
 	if err != nil {
 		http.Error(w, err.Error(), 400)

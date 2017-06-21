@@ -7,7 +7,6 @@ import (
 	"image/png"
 	"io/ioutil"
 	"os"
-	"time"
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
@@ -75,11 +74,12 @@ func GenerateTicketImage(ticket *models.Ticket) image.Image {
 		panic(err)
 	}
 
+	slackCommand := "@mongobucks redeem " + ticket.Redemption
 	redemptionUrl := "http://mongobucks.mongodb.cc/#/r/" + ticket.Redemption
 
 	c.SetFontSize(12)
 	pt = freetype.Pt(25, 369)
-	_, err = c.DrawString(time.Now().Format(redemptionUrl), pt)
+	_, err = c.DrawString(slackCommand, pt)
 	if err != nil {
 		panic(err)
 	}

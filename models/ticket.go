@@ -22,12 +22,30 @@ type Ticket struct {
 	IsUsed     bool
 }
 
-func Redeem(redemption string) error {
+func Redeem(redemption string, user *User) error {
 	session := Session.Copy()
 	defer session.Close()
 
-	err := session.DB(DB).C(TicketCollection).Update(bson.M{"redemption": redemption}, bson.M{"$set": bson.M{"isused": true}})
+	ticket, err := GetTicketByToken(redemption)
+	if err != nil {
+		return err
+	}
 
+	info, err := session.DB(DB).C(TicketCollection).UpdateAll(bson.M{"redemption": redemption, "isused": false}, bson.M{"$set": bson.M{"isused": true}})
+	if err != nil {
+		return err
+	}
+
+	if info.Matched != 1 {
+		return errors.New("ticket already used")
+	}
+
+	reward, err := GetRewardById(ticket.Reward)
+	if err != nil {
+		return err
+	}
+
+	err = reward.Redeem(user)
 	return err
 }
 
@@ -55,10 +73,17 @@ func PurchaseTicket(user *User, reward *Reward) (*Ticket, error) {
 		return nil, err
 	}
 
-	t := Ticket{ID: bson.NewObjectId(), TS: time.Now(), Reward: reward.ID, Username: user.Username,
-		Name: reward.Name, Redemption: uuid.New(), IsUsed: false}
+	return NewTicket(reward.ID, user.Username, reward.Name, uuid.New())
+}
 
-	err = session.DB(DB).C(TicketCollection).Insert(t)
+func NewTicket(rewardId bson.ObjectId, username, rewardName, redemption string) (*Ticket, error) {
+	session := Session.Copy()
+	defer session.Close()
+
+	t := Ticket{ID: bson.NewObjectId(), TS: time.Now(), Reward: rewardId, Username: username,
+		Name: rewardName, Redemption: redemption, IsUsed: false}
+
+	err := session.DB(DB).C(TicketCollection).Insert(t)
 	return &t, err
 }
 
