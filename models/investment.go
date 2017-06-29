@@ -68,7 +68,7 @@ func BuyInvestment(user *User, name string, amount, leverage int) (*Investment, 
 	}
 
 	if len(investments) >= 5 {
-		return nil, errors.New("you can only ahve 5 active investments")
+		return nil, errors.New("you can only have 5 active investments")
 	}
 
 	lastTicker, err := GetLastTickerByName(name)

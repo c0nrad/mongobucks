@@ -9,6 +9,8 @@ import (
 	"os"
 	"strconv"
 
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/c0nrad/mongobucks/models"
 	"github.com/c0nrad/mongobucks/ticket"
 	"github.com/pborman/uuid"
@@ -19,9 +21,10 @@ func main() {
 	if models.MongoUri != "" {
 		fmt.Println("[+] We are using prod!")
 	}
-	ticketCount := 1
+	ticketCount := 8
 
-	reward, err := models.NewReward("20 Mongobucks", "", true, models.RedeemReward, 20)
+	// reward, err := models.NewReward("20 Mongobucks", "", true, models.RedeemReward, 20)
+	reward, err := models.GetRewardById(bson.ObjectIdHex("594ae892ac26852a95b9345a"))
 	if err != nil {
 		panic(err)
 	}

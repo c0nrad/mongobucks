@@ -1,5 +1,11 @@
 <h1> Redemption </h1>
 
+<div ng-hide="me.Username">
+<p> Must be logged in to redeem mongobucks! </p>
+<a href="/login/google" class="btn btn-primary">Login</a>
+</div> 
+
+
 <div ng-if="!ticket.IsUsed">
   <p class="lead text-primary">Ticket is still valid! </p>
 </div>
